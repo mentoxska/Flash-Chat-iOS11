@@ -1,14 +1,12 @@
 //
 //  ViewController.swift
 //  Flash Chat
-//
-//  Created by Angela Yu on 29/08/2015.
-//  Copyright (c) 2015 London App Brewery. All rights reserved.
-//
+
+
 
 import UIKit
 import Firebase
-
+import ChameleonFramework
 
 class ChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
 
@@ -21,6 +19,35 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet var messageTextfield: UITextField!
     @IBOutlet var messageTableView: UITableView!
     var keyboardHeight: CGFloat = 0
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        //TODO: Set yourself as the delegate and datasource here:
+        messageTableView.delegate = self
+        messageTableView.dataSource = self
+        
+        
+        //TODO: Set yourself as the delegate of the text field here:
+        messageTextfield.delegate = self
+        
+        
+        //TODO: Set the tapGesture here:
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector (tableViewTapped))
+        messageTableView.addGestureRecognizer(tapGesture)
+        
+        
+        //TODO: Register your MessageCell.xib file here:
+        messageTableView.register(UINib(nibName: "MessageCell", bundle: nil), forCellReuseIdentifier: "customMessageCell")
+        
+        configureTableView()
+        retrieveMessages()
+        
+        messageTableView.separatorStyle = .none
+    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
          super.viewWillAppear(animated)
@@ -42,37 +69,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //TODO: Set yourself as the delegate and datasource here:
-        messageTableView.delegate = self
-        messageTableView.dataSource = self
-        
-        
-        //TODO: Set yourself as the delegate of the text field here:
-        messageTextfield.delegate = self
-        
-        
-        //TODO: Set the tapGesture here:
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector (tableViewTapped))
-        messageTableView.addGestureRecognizer(tapGesture)
-        
-
-        //TODO: Register your MessageCell.xib file here:
-        messageTableView.register(UINib(nibName: "MessageCell", bundle: nil), forCellReuseIdentifier: "customMessageCell")
-        
-        configureTableView()
-        retrieveMessages()
-       
-        
-    }
+   
     
-
-
-    ///////////////////////////////////////////
-    
-    //MARK: - TableView DataSource Methods
     
     
     
@@ -85,6 +83,15 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.messageBody.text =  messageArray[indexPath.row].messageBody
         cell.senderUsername.text = messageArray[indexPath.row].sender
         cell.avatarImageView.image = UIImage(named: "egg")
+        
+        if cell.senderUsername.text == Auth.auth().currentUser?.email as String! {
+            
+            cell.avatarImageView.backgroundColor = UIColor.flatBlue()
+            cell.messageBackground.backgroundColor = UIColor.flatSkyBlue()
+        }else{
+            cell.avatarImageView.backgroundColor = UIColor.flatWatermelon()
+            cell.messageBackground.backgroundColor = UIColor.flatGray()
+        }
         
         return cell
     }
